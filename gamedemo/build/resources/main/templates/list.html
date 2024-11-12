@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+게임 List
+<form action="/game/search" method="get">
+    <input name="title">
+    <input type="submit" value="검색"/>
+</form>
+<a href="/game/addform">[ADD]</a> <br/>
+<div th:each="game : ${games}">
+    <span th:text="${game.idx}"></span>
+    <a th:href="@{/game/{idx}(idx=${game.idx})}"><span th:text="${game.title}"></span></a>
+    <span th:text="${game.genre}"></span>
+    <span th:text="${game.price}"></span>
+    <a th:href><img th:src="${game.img}" width="50" height="50"/></a>
+    <a th:href="@{/game/delete/{idx}(idx=${game.idx})}">삭제</a>
+    <a th:href="@{/game/updateform/{idx}(idx=${game.idx})}">수정</a>
+</div>
+
+
+</body>
+</html>

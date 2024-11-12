@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<form action="/game/update" th:object="${game}" >
+    idx <input th:field="*{idx}" readonly> <br/>
+    타이틀 <input style="width:280px" th:field="*{title}"> <br/>
+    장르 <input th:field="*{genre}"> <br/>
+    가격 <input th:field="*{price}"> <br/>
+    내용 <textarea th:field="*{content}" rows="5" cols="40">
+            </textarea><br/>
+    이미지 <input th:field="*{img}"> <br/>
+    리뷰 <textarea th:field="*{review}" rows="5" cols="40">
+            </textarea><br/>
+    <input type="submit" value="수정"/>
+</form>
+
+
+</body>
+</html>

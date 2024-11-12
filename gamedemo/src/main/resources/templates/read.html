@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+게시물 읽기 <br/>
+타이틀 : [[${game.title}]]
+장르 : [[${game.genre}]]
+가격 : [[${game.price}]]<br/>
+<img th:src="${game.img}" /> <br/>
+
+내용: <textarea rows="5" cols="40" th:text="${game.content}">
+</textarea><br/>
+
+리뷰: <span th:text="${game.review}"></span>
+
+
+<a th:href="@{/game/delete/{idx}(idx=${game.idx})}">[삭제]</a>
+<a th:href="@{/game/updateform/{idx}(idx=${game.idx})}">[수정]</a>
+
+
+</body>
+</html>
