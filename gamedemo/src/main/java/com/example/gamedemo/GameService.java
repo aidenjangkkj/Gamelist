@@ -4,7 +4,9 @@ import java.util.List;
 
 public interface GameService {
     List<GameDTO> findAll();
-    GameDTO findById(long idx);
+    GameDTO findById(int idx);
+
+
     void save(GameDTO game);
-    void deleteById(long idx);
+    void deleteById(int idx);
 }

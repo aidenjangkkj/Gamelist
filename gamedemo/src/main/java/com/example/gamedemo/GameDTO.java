@@ -11,11 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GameDTO {
-    private long idx;
+    private int idx;
     private String title;
     private String genre;
     private String content;
     private int price;
     private String img;
-    private String review;
 }

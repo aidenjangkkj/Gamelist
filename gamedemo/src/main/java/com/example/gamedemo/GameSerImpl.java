@@ -18,7 +18,7 @@ public class GameSerImpl implements GameService{
     }
 
     @Override
-    public GameDTO findById(long idx) {
+    public GameDTO findById(int idx) {
         return gameRepository.findById(idx)
                 .map(v->Utils.toDTO(v))
                 .orElse(null);
@@ -30,7 +30,7 @@ public class GameSerImpl implements GameService{
     }
 
     @Override
-    public void deleteById(long idx) {
+    public void deleteById(int idx) {
         gameRepository.deleteById(idx);
     }
 }

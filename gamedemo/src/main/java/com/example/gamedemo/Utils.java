@@ -9,7 +9,6 @@ public class Utils {
                 .price(entity.getPrice())
                 .content(entity.getContent())
                 .img(entity.getImg())
-                .review(entity.getReview())
                 .build();
     }
     public static Game toEntity(GameDTO dto){
@@ -20,7 +19,6 @@ public class Utils {
                 .price(dto.getPrice())
                 .content(dto.getContent())
                 .img(dto.getImg())
-                .review(dto.getReview())
                 .build();
     }
 }

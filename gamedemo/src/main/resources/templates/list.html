@@ -18,8 +18,11 @@
     <span th:text="${game.genre}"></span>
     <span th:text="${game.price}"></span>
     <a th:href><img th:src="${game.img}" width="50" height="50"/></a>
-    <a th:href="@{/game/delete/{idx}(idx=${game.idx})}">삭제</a>
-    <a th:href="@{/game/updateform/{idx}(idx=${game.idx})}">수정</a>
+    <div>
+        <a th:href="@{/game/delete/{idx}(idx=${game.idx})}">항목 삭제</a>
+        <a th:href="@{/game/updateform/{idx}(idx=${game.idx})}">항목 수정</a>
+    </div>
+
 </div>
 
 

@@ -16,9 +16,15 @@
 내용: <textarea rows="5" cols="40" th:text="${game.content}">
 </textarea><br/>
 
-리뷰: <span th:text="${game.review}"></span>
+리뷰
+<ul>
+    <li th:each="reviews, iterStat : ${reviewComments}">
+        <span th:text="${reviews}"></span>
+    </li>
+</ul>
 
 
+<br>
 <a th:href="@{/game/delete/{idx}(idx=${game.idx})}">[삭제]</a>
 <a th:href="@{/game/updateform/{idx}(idx=${game.idx})}">[수정]</a>
 

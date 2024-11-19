@@ -22,19 +22,42 @@ public class GameController {
 
     @Autowired
     GameService gameService;
+
+
     @Autowired
     private GameRepository gameRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @RequestMapping("/game")
     public String list(Model model) {
         model.addAttribute("games", gameService.findAll());
+
         return "list";
     }
     @RequestMapping("/game/{idx}")
-    public String read(@PathVariable long idx, Model model){
-        model.addAttribute("game",gameService.findById(idx));
+    public String read(@PathVariable int idx, Model model) {
+        List<Review> reviewsList = reviewRepository.findAll();
+
+        List<Review> filteredReviews = reviewsList.stream()
+                .filter(review -> review.getGame().getIdx() == idx)
+                .collect(Collectors.toList());
+
+        List<String> reviewComments = filteredReviews.stream()
+                .map(Review::getComment)
+                .collect(Collectors.toList());
+
+        List<String> reviewerNames = filteredReviews.stream()
+                .map(Review::getReviewerName)
+                .collect(Collectors.toList());
+
+        model.addAttribute("game", gameService.findById(idx));
+        model.addAttribute("reviewComments", reviewComments);
+        model.addAttribute("reviewerNames", reviewerNames);
+
         return "read";
     }
+
     @RequestMapping("/game/search")
     public String search(@RequestParam Optional<String> title, Model model) {
         List<Game> games = gameRepository.findAll();
@@ -60,12 +83,12 @@ public class GameController {
         return "addform";
     }
     @RequestMapping("/game/delete/{idx}")
-    public String delete(@PathVariable long idx){
+    public String delete(@PathVariable int idx){
         gameService.deleteById(idx);
         return "redirect:/game";
     }
     @RequestMapping("/game/updateform/{idx}")
-    public String updateform(@PathVariable Long idx, Model model){
+    public String updateform(@PathVariable Integer idx, Model model){
         GameDTO game = gameService.findById(idx);
         model.addAttribute("game",game);
         return "updateform";

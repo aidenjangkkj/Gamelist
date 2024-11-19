@@ -18,7 +18,7 @@ public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long idx;
+    private int idx;
 
     private String title;
     private String genre;
@@ -28,5 +28,4 @@ public class Game {
     private String img;
 
     private String content;
-    private String review;
 }
