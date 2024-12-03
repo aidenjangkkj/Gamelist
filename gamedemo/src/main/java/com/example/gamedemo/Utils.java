@@ -21,4 +21,20 @@ public class Utils {
                 .img(dto.getImg())
                 .build();
     }
+    public static ReviewDTO toReviewDTO(Review entity){
+        return ReviewDTO.builder()
+                .review_id(entity.getReview_id())
+                .comment(entity.getComment())
+                .reviewer_name(entity.getReviewerName())
+                .game_id(entity.getGame_id())
+                .build();
+    }
+    public static Review toReviewEntity(ReviewDTO dto){
+        return Review.builder()
+                .review_id(dto.getReview_id())
+                .comment(dto.getComment())
+                .reviewerName(dto.getReviewer_name())
+                .game_id(dto.getGame_id())
+                .build();
+    }
 }
