@@ -59,19 +59,32 @@ public class GameController {
     }
 
     @RequestMapping("/game/search")
-    public String search(@RequestParam Optional<String> title, Model model) {
+    public String search(
+            @RequestParam Optional<String> title,  // 제목 검색
+            @RequestParam Optional<String> genre,  // 장르 검색
+            @RequestParam Optional<Double> minPrice, // 최소 가격
+            @RequestParam Optional<Double> maxPrice, // 최대 가격
+            Model model) {
+
+        // 전체 게임 목록 가져오기
         List<Game> games = gameRepository.findAll();
-        List<Game> filteredGames = title
-                .map(t -> games.stream()
-                        .filter(game -> game.getTitle().toLowerCase().contains(t.toLowerCase()))
-                        .collect(Collectors.toList()))
-                .orElse(games);
+
+        // 필터링 처리
+        List<Game> filteredGames = games.stream()
+                .filter(game -> title.map(t -> game.getTitle().toLowerCase().contains(t.toLowerCase())).orElse(true)) // 타이틀 조건
+                .filter(game -> genre.map(g -> game.getGenre().toLowerCase().contains(g.toLowerCase())).orElse(true)) // 장르 조건
+                .filter(game -> minPrice.map(min -> game.getPrice() >= min).orElse(true)) // 최소 가격 조건
+                .filter(game -> maxPrice.map(max -> game.getPrice() <= max).orElse(true)) // 최대 가격 조건
+                .collect(Collectors.toList());
+
+        // 결과와 메시지 전달
         model.addAttribute("games", filteredGames);
         if (filteredGames.isEmpty()) {
             model.addAttribute("message", "검색 결과 없음");
         }
         return "searchlist";
     }
+    
     @RequestMapping("/game/add")
     public String add(@ModelAttribute GameDTO game){
         gameService.save(game);
