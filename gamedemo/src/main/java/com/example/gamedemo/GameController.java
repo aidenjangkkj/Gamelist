@@ -24,6 +24,8 @@ public class GameController {
     GameService gameService;
 
 
+
+
     @Autowired
     private GameRepository gameRepository;
     @Autowired
@@ -37,23 +39,14 @@ public class GameController {
     }
     @RequestMapping("/game/{idx}")
     public String read(@PathVariable int idx, Model model) {
-        List<Review> reviewsList = reviewRepository.findAll();
+        List<Review> list = reviewRepository.findByGameIdx(idx);
 
-        List<Review> filteredReviews = reviewsList.stream()
-                .filter(review -> review.getGame().getIdx() == idx)
-                .collect(Collectors.toList());
-
-        List<String> reviewComments = filteredReviews.stream()
+        List<String> reviewComments = list.stream()
                 .map(Review::getComment)
-                .collect(Collectors.toList());
-
-        List<String> reviewerNames = filteredReviews.stream()
-                .map(Review::getReviewerName)
                 .collect(Collectors.toList());
 
         model.addAttribute("game", gameService.findById(idx));
         model.addAttribute("reviewComments", reviewComments);
-        model.addAttribute("reviewerNames", reviewerNames);
 
         return "read";
     }
@@ -84,7 +77,7 @@ public class GameController {
         }
         return "searchlist";
     }
-    
+
     @RequestMapping("/game/add")
     public String add(@ModelAttribute GameDTO game){
         gameService.save(game);
@@ -100,10 +93,23 @@ public class GameController {
         gameService.deleteById(idx);
         return "redirect:/game";
     }
+    @RequestMapping("/game/deleteReview/{idx}")
+    public String deleteReview(@PathVariable int idx){
+        reviewRepository.deleteById(idx);
+        return "redirect:/game/updateform/{idx}";
+    }
     @RequestMapping("/game/updateform/{idx}")
     public String updateform(@PathVariable Integer idx, Model model){
         GameDTO game = gameService.findById(idx);
+        List<Review> list = reviewRepository.findByGameIdx(idx);
+
+        List<String> reviewComments = list.stream()
+                .map(Review::getComment)
+                .collect(Collectors.toList());
+
         model.addAttribute("game",game);
+        model.addAttribute("review",reviewComments);
+
         return "updateform";
 
     }
