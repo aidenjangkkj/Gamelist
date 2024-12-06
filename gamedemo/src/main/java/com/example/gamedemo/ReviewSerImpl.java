@@ -1,30 +1,40 @@
 package com.example.gamedemo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ReviewSerImpl implements ReviewService{
+@Service
+public class ReviewSerImpl implements ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
+
+    @Autowired
+    private GameRepository gameRepository;
 
     @Override
     public List<ReviewDTO> findAllReview() {
         return reviewRepository.findAll().stream()
-                .map(v->Utils.toReviewDTO(v))
+                .map(Utils::toReviewDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ReviewDTO findByGameIdReview(int idx) {
-        return reviewRepository.findById(idx)
-                .map(v->Utils.toReviewDTO(v))
-                .orElse(null);
+    public List<ReviewDTO> findByGameIdReview(int gameId) {
+        return reviewRepository.findByGame_Idx(gameId).stream()
+                .map(Utils::toReviewDTO)
+                .collect(Collectors.toList());
     }
+
     @Override
     public void saveReview(ReviewDTO reviewDTO) {
-        Review review = Utils.toReviewEntity(reviewDTO);
+        Game game = gameRepository.findById(reviewDTO.getGame_id())
+                .orElseThrow(() -> new IllegalArgumentException("Game not found with ID: " + reviewDTO.getGame_id()));
+
+        Review review = Utils.toReviewEntity(reviewDTO, game);
+
         reviewRepository.save(review);
     }
 
