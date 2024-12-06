@@ -23,11 +23,18 @@
     </li>
 </ul>
 
-
 <br>
+<h2>리뷰 작성</h2>
+<form th:action="@{/game/review/add/{idx}(idx=${game.idx})}" method="post">
+    <label for="reviewerName">작성자:</label>
+    <input type="text" id="reviewerName" name="reviewer_name" placeholder="이름 입력" required><br><br>
+
+    <label for="comment">리뷰:</label>
+    <textarea id="comment" name="comment" rows="4" cols="50" placeholder="리뷰를 작성하세요" required></textarea><br><br>
+
+    <button type="submit">리뷰 추가</button>
+</form>
 <a th:href="@{/game/delete/{idx}(idx=${game.idx})}">[삭제]</a>
 <a th:href="@{/game/updateform/{idx}(idx=${game.idx})}">[수정]</a>
-
-
 </body>
 </html>
