@@ -26,15 +26,15 @@ public class Utils {
                 .review_id(entity.getReview_id())
                 .comment(entity.getComment())
                 .reviewer_name(entity.getReviewerName())
-                .game_id(entity.getGame_id())
+                .game_id(entity.getGame().getIdx())
                 .build();
     }
-    public static Review toReviewEntity(ReviewDTO dto){
+    public static Review toReviewEntity(ReviewDTO dto, Game game){
         return Review.builder()
                 .review_id(dto.getReview_id())
                 .comment(dto.getComment())
                 .reviewerName(dto.getReviewer_name())
-                .game_id(dto.getGame_id())
+                .game(game)
                 .build();
     }
 }
