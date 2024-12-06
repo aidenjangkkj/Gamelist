@@ -4,8 +4,7 @@ import java.util.List;
 
 public interface ReviewService {
     List<ReviewDTO> findAllReview();
-    ReviewDTO findByGameIdReview(int idx);
-
+    List<ReviewDTO> findByGameIdReview(int gameId);
 
     void saveReview(ReviewDTO review);
     void deleteByIdReview(int idx);
