@@ -1,13 +1,11 @@
 package com.example.gamedemo;
 
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +21,8 @@ public class GameController {
     @Autowired
     GameService gameService;
 
-
+    @Autowired
+    ReviewService reviewService;
 
 
     @Autowired
@@ -39,30 +38,37 @@ public class GameController {
     }
     @RequestMapping("/game/{idx}")
     public String read(@PathVariable int idx, Model model) {
-        List<Review> list = reviewRepository.findByGameIdx(idx);
+        List<Review> reviewsList = reviewRepository.findAll();
 
-        List<String> reviewComments = list.stream()
+        List<Review> filteredReviews = reviewsList.stream()
+                .filter(review -> review.getGame().getIdx() == idx)
+                .collect(Collectors.toList());
+
+        List<String> reviewComments = filteredReviews.stream()
                 .map(Review::getComment)
+                .collect(Collectors.toList());
+
+        List<String> reviewerNames = filteredReviews.stream()
+                .map(Review::getReviewerName)
                 .collect(Collectors.toList());
 
         model.addAttribute("game", gameService.findById(idx));
         model.addAttribute("reviewComments", reviewComments);
+        model.addAttribute("reviewerNames", reviewerNames);
 
         return "read";
     }
 
     @RequestMapping("/game/search")
     public String search(
-            @RequestParam Optional<String> title,  // 제목 검색
-            @RequestParam Optional<String> genre,  // 장르 검색
-            @RequestParam Optional<Double> minPrice, // 최소 가격
-            @RequestParam Optional<Double> maxPrice, // 최대 가격
+            @RequestParam Optional<String> title,
+            @RequestParam Optional<String> genre,
+            @RequestParam Optional<Integer> minPrice,
+            @RequestParam Optional<Integer> maxPrice,
             Model model) {
 
-        // 전체 게임 목록 가져오기
         List<Game> games = gameRepository.findAll();
 
-        // 필터링 처리
         List<Game> filteredGames = games.stream()
                 .filter(game -> title.map(t -> game.getTitle().toLowerCase().contains(t.toLowerCase())).orElse(true)) // 타이틀 조건
                 .filter(game -> genre.map(g -> game.getGenre().toLowerCase().contains(g.toLowerCase())).orElse(true)) // 장르 조건
@@ -70,13 +76,13 @@ public class GameController {
                 .filter(game -> maxPrice.map(max -> game.getPrice() <= max).orElse(true)) // 최대 가격 조건
                 .collect(Collectors.toList());
 
-        // 결과와 메시지 전달
         model.addAttribute("games", filteredGames);
         if (filteredGames.isEmpty()) {
             model.addAttribute("message", "검색 결과 없음");
         }
         return "searchlist";
     }
+
 
     @RequestMapping("/game/add")
     public String add(@ModelAttribute GameDTO game){
@@ -93,23 +99,10 @@ public class GameController {
         gameService.deleteById(idx);
         return "redirect:/game";
     }
-    @RequestMapping("/game/deleteReview/{idx}")
-    public String deleteReview(@PathVariable int idx){
-        reviewRepository.deleteById(idx);
-        return "redirect:/game/updateform/{idx}";
-    }
     @RequestMapping("/game/updateform/{idx}")
     public String updateform(@PathVariable Integer idx, Model model){
         GameDTO game = gameService.findById(idx);
-        List<Review> list = reviewRepository.findByGameIdx(idx);
-
-        List<String> reviewComments = list.stream()
-                .map(Review::getComment)
-                .collect(Collectors.toList());
-
         model.addAttribute("game",game);
-        model.addAttribute("review",reviewComments);
-
         return "updateform";
 
     }
@@ -118,4 +111,28 @@ public class GameController {
         gameService.save(game);
         return "redirect:/game";
     }
+
+    @RequestMapping("/game/review/{idx}")
+    public String review(@PathVariable Integer idx, Model model) {
+        GameDTO game = gameService.findById(idx);
+        if (game == null) {
+            throw new IllegalArgumentException("Game not found with ID: " + idx);
+        }
+        model.addAttribute("game", game);
+
+        List<ReviewDTO> reviews = reviewService.findByGameIdReview(idx);
+        model.addAttribute("reviews", reviews);
+
+        model.addAttribute("newReview", new ReviewDTO());
+        return "review";
+    }
+
+
+    @RequestMapping(value = "/game/review/add/{idx}", method = RequestMethod.POST)
+    public String addReview(@PathVariable Integer idx, @ModelAttribute("newReview") ReviewDTO reviewDTO) {
+        reviewDTO.setGame_id(idx);
+        reviewService.saveReview(reviewDTO);
+        return "redirect:/game/" + idx;
+    }
+
 }
