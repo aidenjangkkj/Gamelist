@@ -16,11 +16,13 @@
     이미지 <input th:field="*{img}"> <br/>
     리뷰
     <ul>
-        <li th:each="reviews, iterStat : ${review}">
-            <span th:text="${reviews}"></span>
-            <a th:href="@{/game/deleteReview/{idx}}">[삭제]</a>
+        <li th:each="review : ${reviews}">
+            <span th:text="${review.comment}"></span>
+            <span th:text="' by ' + ${review.reviewerName}"></span>
+            <a th:href="@{/game/deleteReview/{reviewIdx}(reviewIdx=${review.review_id})}">[삭제]</a>
         </li>
     </ul>
+
     <input type="submit" value="수정"/>
 </form>
 

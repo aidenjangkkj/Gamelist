@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>추천 결과</title>
+</head>
+<body>
+<h1>당신에게 맞는 게임 장르 추천 결과</h1>
+<p>추천 장르: <strong th:text="${recommendedGenre}"></strong></p>
+
+<h2>추천 게임 목록</h2>
+<ul>
+
+  <li th:each="game : ${gamelist}">
+    <a th:href="@{/game/{idx}(idx=${game.idx})}">
+      <span th:text="${game.title}"></span>
+    </a>
+    <span th:text="${game.genre}"></span>
+    <span th:text="${game.price} + '원'"></span>
+  </li>
+</ul>
+
+<a href="/survey">다시 설문하기</a>
+<a href="/home">홈으로</a>
+</body>
+</html>
