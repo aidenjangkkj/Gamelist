@@ -30,6 +30,52 @@ public class GameController {
     @Autowired
     private ReviewRepository reviewRepository;
 
+
+    @RequestMapping("/survey")
+    public String processSurvey(){
+        return "survey";
+    }
+    @RequestMapping("/survey/submit")
+    public String surveyResult(
+            @RequestParam("playStyle") String playStyle,
+            @RequestParam("platform") String platform,
+            @RequestParam("difficulty") String difficulty,
+            @RequestParam("priority") String priority,
+            Model model) {
+
+        final String recommendedGenre; // 선언 시 초기값 설정하지 않음.
+
+        // 조건에 따라 값 설정
+        if ("Story".equals(playStyle) && "Exploration".equals(priority)) {
+            recommendedGenre = "Action-Adventure";
+        } else if ("Freedom".equals(playStyle) && "Creativity".equals(priority)) {
+            recommendedGenre = "Sandbox";
+        } else if ("Progression".equals(playStyle) && "Exploration".equals(priority)) {
+            recommendedGenre = "RPG";
+        } else if ("Creativity".equals(priority) && "Normal".equals(difficulty)) {
+            recommendedGenre = "Simulation";
+        } else if ("Combat".equals(priority) && "Hard".equals(difficulty)) {
+            recommendedGenre = "Rogue-like";
+        } else if ("Combat".equals(priority) && "PC".equals(platform)) {
+            recommendedGenre = "FPS";
+        } else {
+            recommendedGenre = "Action-Adventure"; // 기본값
+        }
+
+        // 추천 장르에 해당하는 게임 필터링
+        List<GameDTO> recommendedGame = gameService.findAll().stream()
+                .filter(game -> game.getGenre().equals(recommendedGenre))
+                .collect(Collectors.toList());
+
+        // 모델에 데이터 추가
+        model.addAttribute("recommendedGenre", recommendedGenre);
+        model.addAttribute("gamelist", recommendedGame);
+
+        // 결과 템플릿 반환
+        return "result";
+    }
+
+
     @RequestMapping("/game")
     public String list(Model model) {
         model.addAttribute("games", gameService.findAll());
@@ -39,7 +85,6 @@ public class GameController {
     @RequestMapping("/game/{idx}")
     public String read(@PathVariable int idx, Model model) {
         List<Review> reviewsList = reviewRepository.findAll();
-
         List<Review> filteredReviews = reviewsList.stream()
                 .filter(review -> review.getGame().getIdx() == idx)
                 .collect(Collectors.toList());
@@ -100,17 +145,28 @@ public class GameController {
         return "redirect:/game";
     }
     @RequestMapping("/game/updateform/{idx}")
-    public String updateform(@PathVariable Integer idx, Model model){
+    public String updateform(@PathVariable Integer idx, Model model) {
         GameDTO game = gameService.findById(idx);
-        model.addAttribute("game",game);
-        return "updateform";
+        List<Review> filteredReviews = reviewRepository.findAll().stream()
+                .filter(review -> review.getGame().getIdx() == idx)
+                .collect(Collectors.toList());
+        model.addAttribute("game", game);
+        model.addAttribute("reviews", filteredReviews);
 
+        return "updateform";
     }
+
     @RequestMapping("/game/update")
     public String update(@ModelAttribute GameDTO game){
         gameService.save(game);
         return "redirect:/game";
     }
+    @RequestMapping("/game/deleteReview/{idx}")
+    public String deleteReview(@PathVariable Integer idx) {
+        reviewService.deleteByIdReview(idx);
+        return "redirect:/game";
+    }
+
 
     @RequestMapping("/game/review/{idx}")
     public String review(@PathVariable Integer idx, Model model) {
